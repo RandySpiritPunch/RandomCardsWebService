@@ -5,17 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DaoServiceImpl implements DaoService {
+
+    List<CardDao> cardDeck = new ArrayList<CardDao>();
+
     @Override
     public List<CardDao> getAll() {
 
-        CardDao card = new CardDao();
-        card.setCardType("ACE");
-        card.setCardSuit("SPADE");
-        card.setDeckType("master deck");
+        createCard("ACE", "SPADE", "master deck");
+        createCard("JOKE", "SPADE", "master deck");
+        createCard("KING", "SPADE", "master deck");
 
-        List<CardDao> cards = new ArrayList<CardDao>();
-        cards.add(card);
+        return cardDeck;
+    }
 
-        return cards;
+    private void createCard(String cardType, String cardSuit, String deckType) {
+        cardDeck.add(new CardDao(cardType,cardSuit,deckType));
     }
 }

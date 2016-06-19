@@ -13,11 +13,12 @@ import java.util.List;
 @RequestMapping("/random")
 public class CardRestController {
 
-    private DaoService daoService = new DaoServiceImpl();
 
     @RequestMapping(value = "/deck", method = RequestMethod.GET)
     public List<CardDao> getRandomizedDeck() {
+        DaoService daoService = new DaoServiceImpl();
         return daoService.getAll();
     }
+
 
 }

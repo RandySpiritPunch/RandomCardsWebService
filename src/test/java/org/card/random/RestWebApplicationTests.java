@@ -61,18 +61,36 @@ public class RestWebApplicationTests {
     }
 
     @Test
+    public void testGetFirstIndexOfRandomDeck() throws Exception {
+
+        mockMvc.perform(get("/random/deck"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].cardType", is(getDeckFromDaoServer().get(0).getCardType())))
+                .andExpect(jsonPath("$[0].deckType", is(getDeckFromDaoServer().get(0).getDeckType())))
+                .andExpect(jsonPath("$[0].cardSuit", is(getDeckFromDaoServer().get(0).getCardSuit())));
+    }
+
+    @Test
     public void testGetRandomDeck() throws Exception {
 
         mockMvc.perform(get("/random/deck"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].cardType", is(getFirstIndexOfCards().get(0).getCardType())))
-                .andExpect(jsonPath("$[0].deckType", is(getFirstIndexOfCards().get(0).getDeckType())))
-                .andExpect(jsonPath("$[0].cardSuit", is(getFirstIndexOfCards().get(0).getCardSuit())));
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].cardType", is(getDeckFromDaoServer().get(0).getCardType())))
+                .andExpect(jsonPath("$[0].deckType", is(getDeckFromDaoServer().get(0).getDeckType())))
+                .andExpect(jsonPath("$[0].cardSuit", is(getDeckFromDaoServer().get(0).getCardSuit())))
+                .andExpect(jsonPath("$[1].cardType", is(getDeckFromDaoServer().get(1).getCardType())))
+                .andExpect(jsonPath("$[1].deckType", is(getDeckFromDaoServer().get(1).getDeckType())))
+                .andExpect(jsonPath("$[1].cardSuit", is(getDeckFromDaoServer().get(1).getCardSuit())))
+                .andExpect(jsonPath("$[2].cardType", is(getDeckFromDaoServer().get(2).getCardType())))
+                .andExpect(jsonPath("$[2].deckType", is(getDeckFromDaoServer().get(2).getDeckType())))
+                .andExpect(jsonPath("$[2].cardSuit", is(getDeckFromDaoServer().get(2).getCardSuit())));
     }
 
-    private List<CardDao> getFirstIndexOfCards() {
+    private List<CardDao> getDeckFromDaoServer() {
         if (daoService == null)
             daoService = new DaoServiceImpl();
 
