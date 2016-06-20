@@ -9,6 +9,15 @@ public class CardDao {
 
     private String deckType;
 
+    public CardDao() {
+    }
+
+    public CardDao(String cardType, String cardSuit, String deckType) {
+        this.cardType = cardType;
+        this.cardSuit = cardSuit;
+        this.deckType = deckType;
+    }
+
     public String getCardType() {
         return cardType;
     }
