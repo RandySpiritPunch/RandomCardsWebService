@@ -3,7 +3,11 @@ package org.card.random;
 import org.card.random.dao.CardDao;
 import org.card.random.dao.DaoService;
 import org.card.random.dao.DaoServiceImpl;
-import org.springframework.web.bind.annotation.*;
+import org.card.random.exception.ResourceNotFoundException;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -19,8 +23,15 @@ public class CardRestController {
     }
 
     @RequestMapping(value = "/deck/suit", method = RequestMethod.GET)
-    public List<CardDao> getCardsBySuit(@RequestBody String c) {
+    public List<CardDao> getCardsBySuit(@RequestBody CardDao c) throws ResourceNotFoundException {
         DaoService daoService = new DaoServiceImpl();
-        return daoService.getCardsBySuit(c);
+        List<CardDao> cards = daoService.getCardsBySuit(c.getCardSuit());
+
+        if(cards.isEmpty()){
+            System.out.println(cards.isEmpty());
+            throw new ResourceNotFoundException(c.getCardSuit());
+        }
+        return cards;
     }
+
 }

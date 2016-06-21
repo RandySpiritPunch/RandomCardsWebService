@@ -26,6 +26,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -107,17 +108,11 @@ public class RestWebApplicationTests {
                 .andExpect(jsonPath("$[2].cardSuit", is(getDeckFromDaoServer().get(2).getCardSuit())));
     }
 
-    private List<CardDao> getDeckFromDaoServer() {
-        if (daoService == null)
-            daoService = new DaoServiceImpl();
-
-        return daoService.getAll();
-    }
-
     @Test
     public void getCardsBySuitTypeHeart() throws Exception {
 
-        mockMvc.perform(get("/random/deck/suit").content("HEART"))
+        mockMvc.perform(get("/random/deck/suit").content(json(new CardDao("", "HEART", "")))
+                .contentType(contentType))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -132,13 +127,26 @@ public class RestWebApplicationTests {
 
     @Test
     public void getCardsBySuitTypeSpade() throws Exception {
-        mockMvc.perform(get("/random/deck/suit").content("SPADE"))
+        mockMvc.perform(get("/random/deck/suit").content(json(new CardDao("", "SPADE", "")))
+                .contentType(contentType))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].cardType", is(getDeckFromDaoServer().get(0).getCardType())))
                 .andExpect(jsonPath("$[0].deckType", is(getDeckFromDaoServer().get(0).getDeckType())))
                 .andExpect(jsonPath("$[0].cardSuit", is(getDeckFromDaoServer().get(0).getCardSuit())));
+    }
+
+    @Test
+    public void testFailureForSuitNotBeingLocated() throws Exception {
+
+                mockMvc.perform(get("/random/deck/suit").content(json(new CardDao("", "FOO", "")))
+                .contentType(contentType))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("code", is("400-Bad Request")))
+                .andExpect(jsonPath("message", is("could not find suit type 'FOO'.")))
+                .andExpect(jsonPath("url", is("http://localhost/random/deck/suit")));
     }
 
     protected String json(Object o) throws IOException {
@@ -148,5 +156,10 @@ public class RestWebApplicationTests {
         return mockHttpOutputMessage.getBodyAsString();
     }
 
+    private List<CardDao> getDeckFromDaoServer() {
+        if (daoService == null)
+            daoService = new DaoServiceImpl();
 
+        return daoService.getAll();
+    }
 }
